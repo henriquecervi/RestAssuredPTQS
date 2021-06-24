@@ -33,10 +33,32 @@ public class ProdutoTest {
                 .extract()
                     .path("data.token");
 
-        System.out.println(token);
-
-        // Tentar inserir um produto com valor 0,00 e validar que a msg de erro fora apresentada e o
+         // Tentar inserir um produto com valor 0,00 e validar que a msg de erro fora apresentada e o
         // status code retornado foi 422
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("token", token)
+                .body("{\n" +
+                        "  \"produtoNome\": \"PlayStation 6\",\n" +
+                        "  \"produtoValor\": 0.00,\n" +
+                        "  \"produtoCores\": [\n" +
+                        "    \"preto\"\n" +
+                        "  ],\n" +
+                        "  \"produtoUrlMock\": \"\",\n" +
+                        "  \"componentes\": [\n" +
+                        "    {\n" +
+                        "      \"componenteNome\": \"Controle\",\n" +
+                        "      \"componenteQuantidade\": 1\n" +
+                        "    }\n" +
+                        "  ]\n" +
+                        "}")
+        .when()
+                .post("/v2/produtos")
+        .then()
+                .assertThat()
+                .body("error", equalTo("O valor do produto deve estar entre R$ 0,01 e R$ 7.000,00"))
+                .statusCode(422);
 
     }
 
