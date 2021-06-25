@@ -1,14 +1,15 @@
 package modulos.produto;
 
-import io.restassured.RestAssured;
+import dataFactory.ProdutoDataFactory;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import pojo.UsuarioPojo;
 
 import static io.restassured.RestAssured.*;
-import static io.restassured.matcher.RestAssuredMatchers.*;
+
 import static org.hamcrest.Matchers.*;
 
 @DisplayName("Testes de API Rest do módulo de Produto")
@@ -44,31 +45,16 @@ public class ProdutoTest {
 
         // Tentar inserir um produto com valor 0,00 e validar que a msg de erro fora apresentada e o
         // status code retornado foi 422
-
         given()
                 .contentType(ContentType.JSON)
                 .header("token", this.token)
-                .body("{\n" +
-                        "  \"produtoNome\": \"PlayStation 6\",\n" +
-                        "  \"produtoValor\": 0.00,\n" +
-                        "  \"produtoCores\": [\n" +
-                        "    \"preto\"\n" +
-                        "  ],\n" +
-                        "  \"produtoUrlMock\": \"\",\n" +
-                        "  \"componentes\": [\n" +
-                        "    {\n" +
-                        "      \"componenteNome\": \"Controle\",\n" +
-                        "      \"componenteQuantidade\": 1\n" +
-                        "    }\n" +
-                        "  ]\n" +
-                        "}")
+                .body(ProdutoDataFactory.criarProdutoComumComOValorIgualA(0.00))
                 .when()
                 .post("/v2/produtos")
                 .then()
                 .assertThat()
                 .body("error", equalTo("O valor do produto deve estar entre R$ 0,01 e R$ 7.000,00"))
                 .statusCode(422);
-
     }
 
     @Test
@@ -78,27 +64,13 @@ public class ProdutoTest {
         given()
                 .contentType(ContentType.JSON)
                 .header("token", this.token)
-                .body("{\n" +
-                        "  \"produtoNome\": \"PlayStation 6\",\n" +
-                        "  \"produtoValor\": 7000.01,\n" +
-                        "  \"produtoCores\": [\n" +
-                        "    \"preto\"\n" +
-                        "  ],\n" +
-                        "  \"produtoUrlMock\": \"\",\n" +
-                        "  \"componentes\": [\n" +
-                        "    {\n" +
-                        "      \"componenteNome\": \"Controle\",\n" +
-                        "      \"componenteQuantidade\": 1\n" +
-                        "    }\n" +
-                        "  ]\n" +
-                        "}")
+                .body(ProdutoDataFactory.criarProdutoComumComOValorIgualA(7000.01))
                 .when()
                 .post("/v2/produtos")
                 .then()
                 .assertThat()
                 .body("error", equalTo("O valor do produto deve estar entre R$ 0,01 e R$ 7.000,00"))
                 .statusCode(422);
-
     }
 
 }
