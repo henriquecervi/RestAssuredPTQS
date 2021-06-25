@@ -1,12 +1,11 @@
 package modulos.produto;
 
 import dataFactory.ProdutoDataFactory;
+import dataFactory.UsuarioDataFactory;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import pojo.UsuarioPojo;
 
 import static io.restassured.RestAssured.*;
 
@@ -14,7 +13,6 @@ import static org.hamcrest.Matchers.*;
 
 @DisplayName("Testes de API Rest do módulo de Produto")
 public class ProdutoTest {
-
     private String token;
 
     @BeforeEach
@@ -24,14 +22,10 @@ public class ProdutoTest {
         // port = 8080;
         basePath = "/lojinha";
 
-        UsuarioPojo usuario = new UsuarioPojo();
-        usuario.setUsuarioLogin("admin");
-        usuario.setUsuarioSenha("admin");
-
         // Obter o token do usuário admin
         this.token = given()
                 .contentType(ContentType.JSON)
-                .body(usuario)
+                .body(UsuarioDataFactory.criarUsuarioAdministrador())
                 .when()
                 .post("/v2/login")
                 .then()
